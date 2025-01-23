@@ -1,6 +1,6 @@
 from transformers import pipeline
 import evaluate
-from sklearn.metrics import mean_squared_error, mean_absolute_error
+from sklearn.metrics import mean_squared_error, mean_absolute_error, confusion_matrix, f1_score, precision_score, recall_score
 import numpy as np
 
 
@@ -9,16 +9,19 @@ class Metrics:
         pass
 
     def f1(self, predicted, actual):
-        metric = evaluate.load("f1")
-        return metric.compute(predictions = predicted, references = actual, average = "macro")
+        # metric = evaluate.load("f1")
+        # return metric.compute(predictions = predicted, references = actual, average = "macro")
+        print('F1 score: ', f1_score(predicted, actual, average = "macro")) 
 
     def precision(self, predicted, actual):
-        metric = evaluate.load("precision")
-        return metric.compute(predictions = predicted, references = actual, average = "macro")
+        # metric = evaluate.load("precision")
+        # return metric.compute(predictions = predicted, references = actual, average = "macro")
+        print('Precision: ', precision_score(predicted, actual, average = "macro")) 
 
     def recall(self, predicted, actual):
-        metric = evaluate.load("recall")
-        return metric.compute(predictions = predicted, references = actual, average = "macro")
+        # metric = evaluate.load("recall")
+        # return metric.compute(predictions = predicted, references = actual, average = "macro")
+        print('Recall: ', recall_score(predicted, actual, average = "macro"))
 
     def percent_within_range(self, predicted_scores, actual_scores, percentage):
         total_count = len(predicted_scores)
@@ -37,17 +40,23 @@ class Metrics:
         percent_10_score = self.percent_within_range(predicted_scores, actual_scores, 0.1)
         percent_20_score = self.percent_within_range(predicted_scores, actual_scores, 0.2)
         percent_30_score = self.percent_within_range(predicted_scores, actual_scores, 0.3)
-        return percent_10_score, percent_20_score, percent_30_score
+        print('Within 10 percent: ', percent_10_score)
+        print('Within 20 percent: ', percent_20_score)
+        print('Within 30 percent: ', percent_30_score)
     
     def mse(self, predicted_scores, actual_scores):
         predicted_scores = np.array(predicted_scores)
         actual_scores = np.array(actual_scores)
-        return mean_squared_error(predicted_scores, actual_scores)
+        print('Mean Squared Error: ', mean_squared_error(predicted_scores, actual_scores))
     
     def mae(self, predicted_scores, actual_scores):
         predicted_scores = np.array(predicted_scores)
         actual_scores = np.array(actual_scores)
-        return mean_absolute_error(predicted_scores, actual_scores)
+        print('Mean Absolute Error: ', mean_absolute_error(predicted_scores, actual_scores))
+    
+    def conf_matrix(self, predicted, actual):
+        matrix = confusion_matrix(predicted, actual)
+        print(matrix)
     
 
             

@@ -1,29 +1,9 @@
 from torch.utils.data import Dataset
 import torch
-from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModelForTokenClassification, Trainer, AutoConfig, AutoModel
+from transformers import AutoTokenizer, AutoModelForSequenceClassification, AutoModelForPreTraining, Trainer, AutoConfig, AutoModel, PreTrainedModel, PretrainedConfig
 import numpy as np
 import random
-
-def train_test_split(percentage, texts, labels):
-  if len(texts) != len(labels):
-    raise Exception('Number of texts and number of labels do not match.')
-  else:
-    num_train_examples = int(np.floor(len(texts) * percentage))
-    train_indices = random.sample(range(0, len(texts)), num_train_examples)
-    train_texts = []
-    train_labels = []
-    test_texts = []
-    test_labels = []
-
-    for i in range(0, len(texts)):
-      if i in train_indices:
-        train_texts.append(texts[i])
-        train_labels.append(labels[i])
-      else:
-        test_texts.append(texts[i])
-        test_labels.append(labels[i])
-    
-    return train_texts, train_labels, test_texts, test_labels
+from constants import TEXT_SEG_ARG_COMP_TAGS, SEMANTIC_TYPE_TAGS
 
 class TextDataset(Dataset):
     def __init__(self, tokenized_texts, labels = None, labels_are_float = False):
@@ -65,12 +45,18 @@ class TextDataset2(Dataset):
         # if self.semantic_type_tags:
         #     item['semantic_type_tags'] = torch.tensor(self.arg_comp_tags[idx])
         return item
-  
-class BertRegression(torch.nn.Module):
-  def __init__(self, model_name):
-      super(BertRegression, self).__init__()
+
+class BertRegression(PreTrainedModel):
+  def __init__(self, model_name, tokenizer = None):
+      super(BertRegression, self).__init__(AutoConfig.from_pretrained(model_name, output_attention = True, output_hidden_state = True))
+      # super(BertRegression, self).__init__()
+      # self.config = AutoConfig.from_pretrained(model_name, output_attention = True, output_hidden_state = True)
+      # self.bert = AutoModel.from_pretrained(model_name, config = self.config)
+
       self.config = AutoConfig.from_pretrained(model_name, output_attention = True, output_hidden_state = True)
       self.bert = AutoModel.from_pretrained(model_name, config = self.config)
+      if tokenizer:
+        self.bert.resize_token_embeddings(len(tokenizer))
       self.regression_dropout = torch.nn.Dropout(0.1)
       self.regressor = torch.nn.Linear(self.config.hidden_size, 1)
       self.num_labels = 1
@@ -81,7 +67,8 @@ class BertRegression(torch.nn.Module):
       output = self.regression_dropout(output)
 
       loss_func = torch.nn.MSELoss()
-      loss = loss_func(output, labels) if self.training else torch.empty(1)
+      # loss = loss_func(output, labels) if self.training else torch.empty(1)
+      loss = loss_func(output, labels)
       return {
               'loss': loss,
               'output': output
@@ -111,5 +98,18 @@ def compute_metrics_for_regression(eval_pred):
 
 PRETRAINED_TOKENIZER = AutoTokenizer.from_pretrained("distilbert/distilbert-base-cased")
 TOKENIZER_KWARGS = {"padding": "max_length", "truncation": True}
-PRETRAINED_MODEL = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-cased", num_labels=3).to('cuda')
-PRETRAINED_MODEL_REGRESSION = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-cased", num_labels=1).to('cuda')
+# PRETRAINED_MODEL = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-cased", num_labels=3).to('cuda')
+# PRETRAINED_MODEL_REGRESSION = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-cased", num_labels=1).to('cuda')
+
+
+def create_custom_tokenizer():
+  new_tokenizer = AutoTokenizer.from_pretrained("distilbert/distilbert-base-cased")
+  additional_special_tokens = ['[{}]'.format(tag.upper()) for tag in TEXT_SEG_ARG_COMP_TAGS]
+  additional_special_tokens.extend(['[{}]'.format(tag.upper()) for tag in SEMANTIC_TYPE_TAGS])
+  additional_special_tokens = list(set(additional_special_tokens))
+  special_tokens_dict = {'additional_special_tokens': additional_special_tokens}
+  new_tokenizer.add_special_tokens(special_tokens_dict)
+  return new_tokenizer
+
+CUSTOM_TOKENIZER = create_custom_tokenizer()
+

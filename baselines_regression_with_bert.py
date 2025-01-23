@@ -5,7 +5,8 @@ import numpy as np
 import torch
 import evaluate
 import numpy as np
-from globals import TextDataset, PRETRAINED_TOKENIZER, TOKENIZER_KWARGS, PRETRAINED_MODEL_REGRESSION, train_test_split, BertRegression, RegressionTrainer
+from globals import TextDataset, PRETRAINED_TOKENIZER, TOKENIZER_KWARGS, RegressionTrainer, BertRegression
+from common_functions import train_test_split
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
@@ -16,7 +17,7 @@ Here, 'label' refers to the score of the text.
 
 #Reading the data
 
-with open('datasets/processed/CMV/final.json', 'r') as infile:
+with open('datasets/processed/AnnotatedCMV/final.json', 'r') as infile:
     data = json.load(infile)
 
 texts = [d['text'] for d in data if isinstance(d['text'], str)]
@@ -44,11 +45,11 @@ print('Datasets created.')
 
 #Setting up the trainer
 
-training_args = TrainingArguments(output_dir="trainers/test_trainer_regressor", 
+training_args = TrainingArguments(output_dir="trainers/baseline_regressor", 
                                   overwrite_output_dir = True,
                                   eval_strategy="epoch", 
                                   report_to ="none",
-                                  num_train_epochs = 5,
+                                  num_train_epochs = 3,
                                   per_device_train_batch_size = 32,
                                   per_device_eval_batch_size = 16,
                                   learning_rate = 1e-5)
@@ -68,6 +69,10 @@ print('Starting training.')
 trainer.train()
 print('Finished training.')
 
-trainer.save_model('models/CMV_Regressor')
-print('Saved model CMV_Regressor.')
+trainer.save_model('models/BaselineRegressor')
+print('Saved model BaselineRegressor.')
 
+# model = trainer.load('models/Regressor_Test')
+# model.save_pretrained('models/Regressor_Test')
+# model = regression_model.load_state_dict()
+# model.save_pretrained('models/Regressor_Test')

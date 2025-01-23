@@ -23,5 +23,3 @@ def split_text(texts):
             text_segments.extend(segments)
         text_segment_list.append(text_segments)
     return text_segment_list
-
-
