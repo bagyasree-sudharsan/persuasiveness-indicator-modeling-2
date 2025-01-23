@@ -1,5 +1,7 @@
 ARG_COMP_TAGS = ['NA', 'B-claim', 'I-claim', 'B-premise', 'I-premise']
 
+TEXT_SEG_ARG_COMP_TAGS = ['NA', 'claim', 'premise']
+
 SEMANTIC_TYPE_TAGS = [
     'NA', 
     'ethos', 
@@ -43,6 +45,22 @@ COMBINED_TAGS = [
     'I-claim-agreement'
 ]
 
+TEXT_SEG_COMBINED_TAGS = [
+    'NA',
+    'premise-ethos', 
+    'premise-logos', 
+    'premise-pathos',
+    'premise-ethos-logos',
+    'premise-logos-pathos', 
+    'premise-ethos-pathos',
+    'premise-ethos-logos-pathos',
+    'interpretation', 
+    'claim-evaluation-emotional', 
+    'claim-evaluation-rational',
+    'claim-disagreement', 
+    'claim-agreement'
+]
+
 SEMANTIC_TYPE_DICT = {
     "ethos": SEMANTIC_TYPE_TAGS[1],
     "logos": SEMANTIC_TYPE_TAGS[2],
@@ -56,6 +74,21 @@ SEMANTIC_TYPE_DICT = {
     "evaluation_rational": SEMANTIC_TYPE_TAGS[10],
     "disagreement": SEMANTIC_TYPE_TAGS[11],
     "agreement": SEMANTIC_TYPE_TAGS[12],
+}
+
+TEXT_SEG_COMBINED_DICT = {
+    "ethos": TEXT_SEG_COMBINED_TAGS[1],
+    "logos": TEXT_SEG_COMBINED_TAGS[2],
+    "pathos": TEXT_SEG_COMBINED_TAGS[3],
+    "ethos_logos": TEXT_SEG_COMBINED_TAGS[4],
+    "logos_pathos": TEXT_SEG_COMBINED_TAGS[5],
+    "ethos_pathos": TEXT_SEG_COMBINED_TAGS[6],
+    "ethos_logos_pathos": TEXT_SEG_COMBINED_TAGS[7],
+    "interpretation": TEXT_SEG_COMBINED_TAGS[8],
+    "evaluation_emotional": TEXT_SEG_COMBINED_TAGS[9],
+    "evaluation_rational": TEXT_SEG_COMBINED_TAGS[10],
+    "disagreement": TEXT_SEG_COMBINED_TAGS[11],
+    "agreement": TEXT_SEG_COMBINED_TAGS[12],
 }
 
 COMBINED_DICT = {
@@ -73,3 +106,4 @@ COMBINED_DICT = {
     "agreement": [COMBINED_TAGS[23], COMBINED_TAGS[24]],
 }
 
+CONJUNCTION_LIST = ['but', 'because', 'therefore', 'thus', 'hence', 'however', 'since']

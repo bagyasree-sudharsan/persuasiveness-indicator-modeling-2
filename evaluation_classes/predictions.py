@@ -1,6 +1,7 @@
 import json
 from transformers import AutoModelForSequenceClassification, AutoTokenizer, pipeline
 from globals import TextDataset, PRETRAINED_TOKENIZER, TOKENIZER_KWARGS
+from split_arguments import split_text
 
 class Prediction:
     def __init__(self):
@@ -49,4 +50,48 @@ class Prediction:
     
     def get_predicted_scores(self, predictions):
         return [prediction[1] for prediction in predictions]
+
+    def predict_better_argument(self, model_path, path_to_data):
+        with open(path_to_data, 'r') as infile:
+            data = json.load(infile)
+
+        model_pipeline = pipeline('text-classification', model_path, tokenizer = PRETRAINED_TOKENIZER, device = 0)
+        predictions = []
+        actual = []
+        for record in data:
+            actual.append(0 if record['winner'] == 'a1' else 1)
+            a1_score = model_pipeline(record['a1'], **TOKENIZER_KWARGS, top_k = None)[0]['score']
+            a2_score = model_pipeline(record['a2'], **TOKENIZER_KWARGS, top_k = None)[0]['score']
+            if a1_score > a2_score:
+                predictions.append(0)
+            else:
+                predictions.append(1)
+        
+        return predictions, actual
+    
+    def prepare_arg_comp_data_for_prediction(self, path_to_data, label_key = None):
+        with open(path_to_data, 'r') as infile:
+            data = json.load(infile)
+        
+        if label_key:
+            eval_texts = [segment for d in data for segment in d['text_segments']]
+            eval_labels = [tag for d in data for tag in d[label_key]]
+        else:
+            eval_texts = [segment for text in eval_texts for segment in split_text(text)] 
+            eval_labels = []
+
+        return eval_texts, eval_labels
+    
+    def predict_arg_comps(self, model_path, texts, num_labels):
+        model_pipeline = pipeline('text-classification', model_path, tokenizer = PRETRAINED_TOKENIZER, device = 0)
+        outputs = [model_pipeline(example, **TOKENIZER_KWARGS, top_k = None) for example in texts]
+
+        predictions = []
+        for output in outputs:
+            label_scores = [(label_score['label'], label_score['score']) for label_score in output]
+            predictions.append(max(label_scores, key=lambda label_score: label_score[1]))
+
+        return predictions
+
+
     

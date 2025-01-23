@@ -5,15 +5,17 @@ import numpy as np
 import torch
 import evaluate
 import numpy as np
-from globals import TextDataset2, PRETRAINED_TOKENIZER, TOKENIZER_KWARGS, PRETRAINED_MODEL_REGRESSION, train_test_split, BertRegression, RegressionTrainer
+from globals import TextDataset2, PRETRAINED_TOKENIZER, TOKENIZER_KWARGS, train_test_split, BertRegression, RegressionTrainer
 from sklearn.metrics import mean_absolute_error
 from sklearn.metrics import mean_squared_error
 from sklearn.metrics import r2_score
+import os
 
 '''
 Here, 'label' refers to the score of the text.
 '''
-
+os.environ["CUDA_LAUNCH_BLOCKING"] = '1'
+os.environ['TORCH_USE_CUDA_DSA'] = '1'
 #Reading the data
 
 with open('datasets/processed/CMV/final.json', 'r') as infile:
@@ -106,7 +108,6 @@ def tokenize_and_align_labels(token_list, arg_comp_tag_list, semantic_tag_list, 
 train_tokenized = tokenize_and_align_labels(train_texts, train_arg_comp_tags, train_semantic_type_tags, PRETRAINED_TOKENIZER)
 # train_texts = [' '.join(text) for text in train_texts]
 # train_tokenized = PRETRAINED_TOKENIZER(train_texts, **TOKENIZER_KWARGS)
-print(len(train_tokenized.semantic_type_tags))
 
 # test_tokenized = PRETRAINED_TOKENIZER(test_texts, **TOKENIZER_KWARGS)
 
@@ -126,17 +127,25 @@ class BertRegression(torch.nn.Module):
       self.regression_dropout = torch.nn.Dropout(0.1)
       self.regressor = torch.nn.Linear(self.config.hidden_size * 3, 1)
       self.num_labels = 1
-      self.arg_comp_tags = torch.nn.Embedding(5, self.config.hidden_size)
-      self.semantic_type_tags = torch.nn.Embedding(13, self.config.hidden_size)
+      self.arg_comp_tags = torch.nn.Embedding(512, self.config.hidden_size)
+    
+    #   self.semantic_type_tags = torch.nn.Embedding(512, self.config.hidden_size)
 
   def forward(self, input_ids, attention_mask, labels=None, arg_comp_tags = None, semantic_type_tags = None):
-      pooled_output = self.bert(input_ids=input_ids, attention_mask=attention_mask)[0]
+      pooled_output = self.bert(input_ids=input_ids, attention_mask=attention_mask)
       embedded_arg_comp_tags = self.arg_comp_tags(arg_comp_tags)
-      embedded_semantic_type_tags = self.semantic_type_tags(semantic_type_tags)
-      cls_token_embedding = pooled_output[1]
-      print(cls_token_embedding)
-      concatenated_embeddings = torch.cat((cls_token_embedding, embedded_arg_comp_tags, embedded_semantic_type_tags), dim = 1)
-      output = self.regressor(concatenated_embeddings)
+      len(embedded_arg_comp_tags)
+    #   embedded_semantic_type_tags = self.semantic_type_tags(semantic_type_tags)
+      token_embeddings = pooled_output[1]
+      token_embeddings = self.dropout(token_embeddings)
+      print(token_embeddings.size())
+    #   print(token_embeddings.size())
+      print(embedded_arg_comp_tags.size())
+    #   print(semantic_type_tags.size())
+    #   print(embedded_arg_comp_tags[0])
+    #   print(embedded_semantic_type_tags.size())
+      concatenated_embeddings = torch.cat((pooled_output, embedded_arg_comp_tags), dim = 1)
+      output = self.regressor(pooled_output)
       output = self.regression_dropout(output)
 
       loss_func = torch.nn.MSELoss()
