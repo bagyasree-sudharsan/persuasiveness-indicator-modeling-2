@@ -17,6 +17,8 @@ class TextDataset(Dataset):
        return len(self.encodings.input_ids)
 
     def __getitem__(self, idx):
+        # review = str(self.review[item])
+        # review = " ".join(review.split())
         item = {key: torch.tensor(val[idx]) for key, val in self.encodings.items()}
         if self.labels:
             item['labels'] = torch.tensor(self.labels[idx])
@@ -76,13 +78,22 @@ class BertRegression(PreTrainedModel):
 
 class RegressionTrainer(Trainer):
   def compute_loss(self, model, inputs, return_outputs=False, num_items_in_batch = None):
+      # print('IN COMPUTE LOSS------------------')
       labels = inputs.pop("labels")
       output = model(labels = labels, **inputs)
-      loss = output['loss']
-      outputs = output['output']
-      return (loss, outputs) if return_outputs else loss
+      # loss = output['loss']
+      # outputs = output['output']
+      loss = output.loss
+      logits = output.logits
+      loss_fct = torch.nn.MSELoss()
+      loss = loss_fct(logits.view(-1), labels.view(-1))
+      # loss, outputs = output
+      # print('loss: ', loss)
+      # print('outputs: ', outputs)
+      return (loss, logits) if return_outputs else loss
   
 def compute_metrics_for_regression(eval_pred):
+  print('IN METRICS FOR REGRESSION--------------------')
   logits, labels = eval_pred
   mse = mean_squared_error(labels, logits)
   mae = mean_absolute_error(labels, logits)

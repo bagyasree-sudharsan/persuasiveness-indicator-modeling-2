@@ -36,8 +36,10 @@ class Prediction:
                     labels.append(1)
                 else:
                     labels.append(0)
+            
             predictions = [(label, score) for label, score in zip(labels, scores)]
-
+            for p in predictions:
+                print(p)
         return predictions
     
     def prepare_data_for_prediction(self, path_to_data):
