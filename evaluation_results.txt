@@ -1,0 +1,12 @@
+EVALUATION:  Baseline AnnotatedCMV on AnnotatedCMV - Regression Fixed
+F1 score:  0.1898335582546109
+Precision:  0.3333333333333333
+Recall:  0.13270440251572327
+
+Mean Squared Error:  0.032029065561673696
+Mean Absolute Error:  0.15804255238753134
+Within 5 percent:  0.0
+Within 10 percent:  0.0
+Within 20 percent:  0.0
+Within 30 percent:  0.0018867924528301887
+

@@ -1,6 +1,7 @@
 from symbolic_regressor import symbolic_regressor
 import json
 import random
+import numpy as np
 
 def load_data(path_to_data):
     with open(path_to_data, 'r') as infile:
@@ -9,8 +10,8 @@ def load_data(path_to_data):
     data_tuples = [(d['text'], d['score']) for d in data if isinstance(d['text'], str)]
     random.shuffle(data_tuples)
 
-    texts = [d[0] for d in data_tuples]
-    labels = [d[1] for d in data_tuples]
+    texts = [d[0] for d in data_tuples[:5000]]
+    labels = [d[1] for d in data_tuples[:5000]]
     
     return texts, labels
 
@@ -23,7 +24,7 @@ def load_and_combine_datasets(path_to_train_dataset, path_to_test_dataset, perce
 
     num_test_examples = int(np.floor(len(test_data) * percent_of_test_data))
     test_indices = random.sample(range(0, len(test_data)), num_test_examples)
-    test_data_to_add = [test_data[i] for i in range(0, test_indices)]
+    test_data_to_add = [test_data[i] for i in range(0, len(test_indices))]
     train_data += test_data_to_add
 
     data_tuples = [(d['text'], d['score']) for d in train_data if isinstance(d['text'], str)]
@@ -35,15 +36,15 @@ def load_and_combine_datasets(path_to_train_dataset, path_to_test_dataset, perce
     return texts, labels
 
 
-training = [
-    [
-        'AnnotatedCMV',
-        'datasets/processed/AnnotatedCMV/final.json',
-        '',
-        None,
-        'annotated_cmv',
-        'AnnotatedCMV_TextSegTagged'
-    ],
+training1 = [
+    # [
+    #     'AnnotatedCMV',
+    #     'datasets/processed/AnnotatedCMV/final.json',
+    #     '',
+    #     None,
+    #     'annotated_cmv',
+    #     'AnnotatedCMV_TextSegTagged'
+    # ],
     [
         'Full CMV',
         'datasets/processed/CMV/final.json',
@@ -59,7 +60,10 @@ training = [
         None,
         'scoa',
         'SCOA_TextSegTagged'
-    ],
+    ]
+]
+
+training2 = [
     [
         'Full CMV + 15% SCOA',
         'datasets/processed/CMV/final.json',
@@ -75,7 +79,10 @@ training = [
         0.30,
         'cmv_scoa_30',
         'CMV_SCOA_30_TextSegTagged'
-    ],
+    ]
+]
+
+training3 = [
      [
         'SCOA  + 15% CMV',
         'datasets/processed/SCOA/final.json',
@@ -91,11 +98,11 @@ training = [
         0.30,
         'scoa_cmv_30',
         'SCOA_CMV_30_TextSegTagged'
-    ],
+    ]
 
 ]
 
-for t in training:
+for t in training1:
     print(t[0], '----------------------------------------------------------')
     if t[3]:
         texts, labels = load_and_combine_datasets(t[1], t[2], t[3])
