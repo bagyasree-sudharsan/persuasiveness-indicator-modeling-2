@@ -18,7 +18,7 @@ class Metrics:
         print('Recall: ', recall_score(predicted, actual, average = "macro"))
     
     def accuracy(self, predicted, actual):
-        print('Accuracy: ', accuracy_score(predicted, actual, average = "macro")) 
+        print('Accuracy: ', accuracy_score(predicted, actual)) 
 
     
     def percent_within_range_overall(self, predicted_scores, actual_scores, percentage):

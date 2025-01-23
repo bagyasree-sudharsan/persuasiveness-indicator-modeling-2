@@ -1,5 +1,21 @@
 import json
 import random
+import numpy as np
+
+def create_combined_datasets_for_training(train_dataset_path, test_dataset_path, percent, new_dataset_file):
+    with open(train_dataset_path, 'r') as infile:
+        train_data = json.read(infile)
+    with open(test_dataset_path, 'r') as infile:
+        test_data = json.read(infile)
+    
+    num_test = np.ceil(len(test_data) * percent)
+    test_data_to_train = test_data[:num_test]
+
+    merged_data = train_data + test_data_to_train
+    random.shuffle(merged_data)
+
+    with open('datasets/{}'.format(new_dataset_file), 'w') as outfile:
+        json.dump(merged_data, outfile, indent = 4)
 
 def create_ukp_subset(file_path, num_per_category, output_file):
     with open(file_path, 'r') as infile:
@@ -8,7 +24,7 @@ def create_ukp_subset(file_path, num_per_category, output_file):
     a1_winner = [{**d, 
         'arg_comps_a1': [],
         'arg_comps_a2': [],
-        'sem_types_a2': [],
+        'sem_types_a1': [],
         'sem_types_a2': [],
         'text_segments_a1': [],
         'text_segments_a2': []} for d in data if d['winner'] == 'a1']
@@ -72,4 +88,9 @@ def create_subsets(file_path, num_per_category, output_file, is_scoa = False):
 
 # create_subsets('../datasets/processed/CMV/final.json', 1500, 'CMV')
 # create_subsets('../datasets/processed/SCOA/final.json', 1500, 'SCOA', is_scoa = True)
-create_ukp_subset('../datasets/processed/UKP/final.json', 1500, 'UKP')
+# create_ukp_subset('../datasets/processed/UKP/final.json', 1500, 'UKP')
+
+create_combined_datasets_for_training('datasets/CMV_train_tagged.json', 'datasets/SCOA_train_tagged.json', 0.15, 'CMV_SCOA15.json')
+create_combined_datasets_for_training('datasets/CMV_train_tagged.json', 'datasets/SCOA_train_tagged.json', 0.30, 'CMV_SCOA30.json')
+create_combined_datasets_for_training('datasets/SCOA_train_tagged.json', 'datasets/CMV_train_tagged.json', 0.15, 'SCOA_CMV15.json')
+create_combined_datasets_for_training('datasets/SCOA_train_tagged.json', 'datasets/CMV_train_tagged.json', 0.30, 'SCOA_CMV30.json')

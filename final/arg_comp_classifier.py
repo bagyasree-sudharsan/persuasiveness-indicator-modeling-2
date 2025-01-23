@@ -5,6 +5,7 @@ import numpy as np
 import torch
 import evaluate
 from common import train_test_split, TextDataset
+from sklearn.metrics import confusion_matrix
 
 #Reading the data
 
@@ -29,6 +30,7 @@ def compute_metrics(eval_pred):
     metric = evaluate.load('f1')
     logits, labels = eval_pred
     predictions = np.argmax(logits, axis=-1)
+    print(confusion_matrix(predictions, labels))
     return metric.compute(predictions=predictions, references=labels, average = "macro")
     
 # Tokenizing data
@@ -50,11 +52,11 @@ model = DistilBertForSequenceClassification.from_pretrained("distilbert/distilbe
 
 training_args = TrainingArguments(output_dir="trainers/arg_comp_trainer", 
                                   report_to ="none",
-                                  num_train_epochs = 4,
-                                  per_device_train_batch_size = 16,
+                                  num_train_epochs = 3,
+                                  per_device_train_batch_size = 8,
                                   logging_strategy = 'epoch',
-                                  eval_strategy = 'epoch')
-
+                                  eval_strategy = 'epoch',
+                                  learning_rate = 3e-5)
 
 trainer = Trainer(
     model=model,

@@ -1,16 +1,25 @@
 import json
 from common import train_test_split, add_tags_to_text, TextDataset, get_tokenizer
 from transformers import DistilBertForSequenceClassification, Trainer, TrainingArguments
+import evaluate
+import numpy as np
+from sklearn.metrics import confusion_matrix
 
+def compute_metrics(eval_pred):
+    metric = evaluate.load('f1')
+    logits, labels = eval_pred
+    predictions = np.argmax(logits, axis=-1)
+    print(confusion_matrix(predictions, labels))
+    return metric.compute(predictions=predictions, references=labels, average = "macro")
 
-def symbolic_regressor(train_data_path, training_output_file, model_file, split_ratio= 0.95, use_sem_types = True):
+def symbolic_classifier(train_data_path, training_output_file, model_file, split_ratio= 0.95, use_sem_types = True):
     with open(train_data_path, 'r') as infile:
         data = json.load(infile)
 
     text_tuples = [
         (
         d['text'],
-        d['score'],
+        d['is_successful'],
         d['arg_comps'],
         d['sem_types'],
         d['text_segments']) for d in data if (isinstance(d['text'], str))
@@ -31,8 +40,8 @@ def symbolic_regressor(train_data_path, training_output_file, model_file, split_
     print('Data tokenized.')
 
     # Creating datasets in the form required by Trainer
-    train_dataset = TextDataset(train_tokenized, train_labels, labels_are_float = True)
-    test_dataset = TextDataset(test_tokenized, test_labels, labels_are_float = True)
+    train_dataset = TextDataset(train_tokenized, train_labels, labels_are_float = False)
+    test_dataset = TextDataset(test_tokenized, test_labels, labels_are_float = False)
 
     print('Datasets created.')
 
@@ -41,21 +50,24 @@ def symbolic_regressor(train_data_path, training_output_file, model_file, split_
     training_args = TrainingArguments(output_dir="trainers/{}".format(training_output_file), 
                                     overwrite_output_dir = True,
                                     report_to ="none",
-                                    num_train_epochs = 12,
-                                    per_device_train_batch_size = 16,
+                                    num_train_epochs = 5,
+                                    per_device_train_batch_size = 8,
                                     learning_rate = 3e-5,
-                                    logging_strategy = "epoch")
+                                    logging_strategy = "epoch",
+                                    eval_strategy = "epoch")
 
-    regression_model = DistilBertForSequenceClassification.from_pretrained(
+    model = DistilBertForSequenceClassification.from_pretrained(
         'distilbert/distilbert-base-cased',
-        num_labels = 1
+        num_labels = 3
     )
-    regression_model.resize_token_embeddings(len(tokenizer))
+    model.resize_token_embeddings(len(tokenizer))
 
     trainer = Trainer(
-        model=regression_model,
+        model=model,
         args=training_args,
-        train_dataset=train_dataset
+        train_dataset=train_dataset,
+        eval_dataset = test_dataset,
+        compute_metrics=compute_metrics
     )
 
 

@@ -14,6 +14,7 @@ for dataset in datasets:
     print('Successful: ', labels.count(1))
     print('Unsuccessful: ', labels.count(0))
     print('Neutral: ', labels.count(2))
+    print('Total: ', len(labels))
     print()
 
 
