@@ -33,8 +33,13 @@ def train_test_split(percentage, texts, labels):
 with open('datasets/processed/CMV/final.json', 'r') as infile:
     data = json.load(infile)
 
-texts = [d['text'] for d in data if isinstance(d['text'], str)]
-labels = [d['is_successful'] for d in data if isinstance(d['text'], str)]
+texts = []
+labels = []
+
+for d in data:
+  if isinstance(d['text'], str):
+    texts.append(d['text'])
+    labels.append(d['is_successful'])
 
 train_texts, train_labels, test_texts, test_labels = train_test_split(0.85, texts, labels)
 
@@ -83,7 +88,7 @@ print('Datasets created.')
 model = AutoModelForSequenceClassification.from_pretrained("distilbert/distilbert-base-cased", num_labels=3).to('cuda')
 print('Loaded model.')
 
-training_args = TrainingArguments(output_dir="test_trainer", 
+training_args = TrainingArguments(output_dir="trainers/test_trainer", 
                                   eval_strategy="epoch", 
                                   report_to ="none",
                                   num_train_epochs = 5)
@@ -101,5 +106,5 @@ print('Starting training.')
 trainer.train()
 print('Finished training.')
 
-trainer.save_model('CMV_Classifier')
+trainer.save_model('models/CMV_Classifier')
 print('Saved model CMV_Classifier.')

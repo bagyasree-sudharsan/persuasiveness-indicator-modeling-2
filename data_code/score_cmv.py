@@ -143,7 +143,7 @@ for utterance in unsuccessful:
 #Neutral scores
 for utterance in neutral:
     utterance['is_successful'] = 2
-    utterance['score'] = 50
+    utterance['score'] = 0.50
     final_data.append(utterance)
 
 # Normalize scores
