@@ -28,7 +28,7 @@ roots = annotation_middleware_data['roots']
 replies = annotation_middleware_data['replies']
 annotated = []
 
-for utterance in utterances[30:35]:
+for utterance in utterances[160:180]:
     if utterance['id'] == utterance['root']:
         roots[utterance['id']] = utterance['text']
         replies[utterance['id']] = utterance['text']
@@ -38,6 +38,10 @@ for utterance in utterances[30:35]:
         except:
             print('Root not available at this time.')
             continue
+        
+        print('Attack: 0')
+        print('Support: 1')
+        print('Neutral: 2')
         
         text = utterance['text']
         print('TEXT: ')

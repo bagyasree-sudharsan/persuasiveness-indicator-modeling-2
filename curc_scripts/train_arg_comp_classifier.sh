@@ -7,7 +7,7 @@
 #SBATCH --qos=blanca-curc-gpu
 #SBATCH --partition=blanca-curc-gpu
 #SBATCH --gres=gpu:1
-#SBATCH --output=curc_output/arg_rel_classifier.out
+#SBATCH --output=curc_output/arg_comp_classifier.out
 #SBATCH --mail-type="ALL"
 #SBATCH --mail-user="basu9216@colorado.edu"
 
@@ -45,4 +45,4 @@ module load cudnn
 conda activate conda_nsp_env 
 # Run your python file. python -m src.<module>.<script>
 # DO NOT ADD `.py` at the end of your script. 
-python -m train_arg_rel_classifier
+python -m final/arg_comp_classifier

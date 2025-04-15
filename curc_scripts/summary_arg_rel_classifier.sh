@@ -18,11 +18,10 @@
 nvidia-smi >> logs/nvidia-smi.out
 
 # Activating the conda envrionment. 
-# DO NOT USE conda activate, 
-# it does not work when submitting
-# a job to CURC. 
 source /home/${USER}/.bashrc
 source ~/.bashrc  
+conda activate conda_nsp_env
+
 
 # Making folders for the experiment, 
 # if they are not already created. 
@@ -45,4 +44,4 @@ module load cudnn
 conda activate conda_nsp_env 
 # Run your python file. python -m src.<module>.<script>
 # DO NOT ADD `.py` at the end of your script. 
-python -m train_arg_rel_classifier
+python -m arg_rel_classifier_with_summary
