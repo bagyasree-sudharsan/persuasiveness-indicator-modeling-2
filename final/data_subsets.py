@@ -1,6 +1,7 @@
 import json
 import random
 import numpy as np
+from constants import FINAL_DATA_PATH
 
 def create_combined_datasets_for_training(train_dataset_path, test_dataset_path, percent, new_dataset_file):
     with open(train_dataset_path, 'r') as infile:
@@ -14,7 +15,7 @@ def create_combined_datasets_for_training(train_dataset_path, test_dataset_path,
     merged_data = train_data + test_data_to_train
     random.shuffle(merged_data)
 
-    with open('datasets/{}'.format(new_dataset_file), 'w') as outfile:
+    with open(FINAL_DATA_PATH + f'{new_dataset_file}', 'w') as outfile:
         json.dump(merged_data, outfile, indent = 4)
 
 def create_ukp_subset(file_path, num_per_category, output_file):
@@ -41,7 +42,7 @@ def create_ukp_subset(file_path, num_per_category, output_file):
     required_data = a1_winner[:num_per_category] + a2_winner[:num_per_category]
     random.shuffle(required_data)
 
-    with open('datasets/{}_test.json'.format(output_file), 'w') as outfile:
+    with open(FINAL_DATA_PATH + '{}_test.json'.format(output_file), 'w') as outfile:
         json.dump(required_data, outfile, indent = 4)
 
 def create_subsets(file_path, num_per_category, output_file, is_scoa = False):
@@ -80,17 +81,17 @@ def create_subsets(file_path, num_per_category, output_file, is_scoa = False):
         'sem_types': [],
         'text_segments': []} for text, is_successful, score in data_tuples]
 
-    with open('datasets/{}_train.json'.format(output_file), 'w') as outfile:
+    with open(FINAL_DATA_PATH + '{}_train.json'.format(output_file), 'w') as outfile:
         json.dump(train_data, outfile, indent = 4)
-    with open('datasets/{}_test.json'.format(output_file), 'w') as outfile:
+    with open(FINAL_DATA_PATH + '{}_test.json'.format(output_file), 'w') as outfile:
         json.dump(test_data, outfile, indent = 4)
 
 
-create_subsets('datasets/processed/CMV/final.json', 1500, 'CMV')
-create_subsets('datasets/processed/SCOA/final.json', 1500, 'SCOA', is_scoa = True)
-create_ukp_subset('datasets/processed/UKP/final.json', 1500, 'UKP')
+create_subsets('datasets/processed/CMV/final.json', 2500, 'CMV') #Original results in NeurSym paper used subsets of 1500 each.
+create_subsets('datasets/processed/SCOA/final.json', 2500, 'SCOA', is_scoa = True) #Original results in NeurSym paper used subsets of 1500 each.
+create_ukp_subset('datasets/processed/UKP/final.json', 2500, 'UKP') #Original results in NeurSym paper used subsets of 1500 each.
 
-# create_combined_datasets_for_training('datasets/CMV_train_tagged.json', 'datasets/SCOA_train_tagged.json', 0.15, 'CMV_SCOA15.json')
-# create_combined_datasets_for_training('datasets/CMV_train_tagged.json', 'datasets/SCOA_train_tagged.json', 0.30, 'CMV_SCOA30.json')
-# create_combined_datasets_for_training('datasets/SCOA_train_tagged.json', 'datasets/CMV_train_tagged.json', 0.15, 'SCOA_CMV15.json')
-# create_combined_datasets_for_training('datasets/SCOA_train_tagged.json', 'datasets/CMV_train_tagged.json', 0.30, 'SCOA_CMV30.json')
+# create_combined_datasets_for_training(FINAL_DATA_PATH + 'CMV_train_tagged.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json', 0.15, 'CMV_SCOA15.json')
+# create_combined_datasets_for_training(FINAL_DATA_PATH + 'CMV_train_tagged.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json', 0.30, 'CMV_SCOA30.json')
+# create_combined_datasets_for_training(FINAL_DATA_PATH + 'SCOA_train_tagged.json', FINAL_DATA_PATH + 'CMV_train_tagged.json', 0.15, 'SCOA_CMV15.json')
+# create_combined_datasets_for_training(FINAL_DATA_PATH + 'SCOA_train_tagged.json', FINAL_DATA_PATH + 'CMV_train_tagged.json', 0.30, 'SCOA_CMV30.json')

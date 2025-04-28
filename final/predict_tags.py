@@ -1,6 +1,7 @@
 import json
 from common import split_text, get_tokenizer
 from transformers import AutoModelForSequenceClassification, pipeline
+from constants import FINAL_DATA_PATH
 
 def predict_arg_comps(text_segments):
     model = AutoModelForSequenceClassification.from_pretrained('models/ArgCompClassifier')
@@ -94,14 +95,14 @@ def tag_data(file_path, output_file_path, is_ukp = False):
     with open(output_file_path, 'w') as outfile:
         json.dump(final_data, outfile, indent = 4)
 
-tag_data('datasets/CMV_train.json', 'datasets/CMV_train_tagged.json')
+tag_data(FINAL_DATA_PATH + 'CMV_train.json', FINAL_DATA_PATH + 'CMV_train_tagged.json')
 print('----------------------------Tagged CMV_train.----------------------------------------')
-tag_data('datasets/CMV_test.json', 'datasets/CMV_test_tagged.json')
+tag_data(FINAL_DATA_PATH + 'CMV_test.json', FINAL_DATA_PATH + 'CMV_test_tagged.json')
 print('----------------------------Tagged CMV_test.-----------------------------------------')
-tag_data('datasets/SCOA_train.json', 'datasets/SCOA_train_tagged.json')
+tag_data(FINAL_DATA_PATH + 'SCOA_train.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json')
 print('----------------------------Tagged SCOA_train.---------------------------------------')
-tag_data('datasets/SCOA_test.json', 'datasets/SCOA_test_tagged.json')
+tag_data(FINAL_DATA_PATH + 'SCOA_test.json', FINAL_DATA_PATH + 'SCOA_test_tagged.json')
 print('----------------------------Tagged SCOA_test.----------------------------------------')
-tag_data('datasets/UKP_test.json', 'datasets/UKP_test_tagged.json', is_ukp = True)
+tag_data(FINAL_DATA_PATH + 'UKP_test.json', FINAL_DATA_PATH + 'UKP_test_tagged.json', is_ukp = True)
 print('----------------------------Tagged UKP_test.-----------------------------------------')
         

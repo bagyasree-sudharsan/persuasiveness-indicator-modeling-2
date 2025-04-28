@@ -16,3 +16,5 @@ SEM_TYPES = [
     'agreement']
 
 CONJUNCTION_LIST = ['but', 'because', 'therefore', 'thus', 'hence', 'however', 'since']
+
+FINAL_DATA_PATH = 'datasets/final_data/'
