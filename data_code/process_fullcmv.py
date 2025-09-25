@@ -3,9 +3,9 @@ import re
 import numpy as np
 import pandas as pd
 
-# '''
-#     Process original dataset as a text file and convert to a dict (format is not right to directly load as dictionary).
-# '''
+'''
+    Process original dataset as a text file and convert to a dict (format is not right to directly load as dictionary).
+'''
 # dataset_path = 'datasets/original/CMV/'
 
 # conversation_file = dataset_path + 'conversations.json'
@@ -30,7 +30,7 @@ import pandas as pd
 #     json.dump(utterances, outfile, indent = 4)
 
 #Loading from the file for now.
-with open('datasets/processed/CMV/cmv_usable.jsonl', 'r') as infile:
+with open('../datasets/processed/CMV/cmv_usable.jsonl', 'r') as infile:
     utterances = json.load(infile)
 
 print('Loaded utterances.')

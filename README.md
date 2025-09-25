@@ -7,3 +7,10 @@ All relevant code is in final/.
 5. Actual training code is present in baseline_classifier.py, baseline_regressor.py, symbolic_classifier.py, symbolic_regressor.py.
 6. evaluate_models.py evaluates the models. metrics.py contains the metrics used for evaluation. 
 7. common.py has custom modules used across various files. 
+
+Notes to rebuild datasets (in required formats):
+1. Run download_datasets.py to download the CMV and SCOA datasets. 
+2. Copy the contents of the downloaded folder to datasets/original/CMV and datasets/original/SCOA respectively. 
+3. Run process_fullcmv.py and process_scoa.py. 
+4. Run score_cmv.py and score_scoa.py. 
+5. 
