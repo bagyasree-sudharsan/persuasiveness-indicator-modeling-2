@@ -55,30 +55,28 @@ def create_ap_subset(file_path, output_file, train_test_split = 0.75):
     random.shuffle(successful)
     random.shuffle(unsuccessful)
 
+    if len(successful) > len(unsuccessful):
+        successful = successful[:len(unsuccessful)]
+    else:
+        unsuccessful = unsuccessful[:len(successful)]
+    
     num_successful_train = int(len(successful) * train_test_split)
     num_unsuccessful_train = int(len(unsuccessful) * train_test_split)
-
+    
     train_data_tuples = successful[:num_successful_train] + unsuccessful[:num_unsuccessful_train]
     random.shuffle(train_data_tuples)
     train_data = [{
         'text': text, 
         'is_successful': is_successful, 
-        'score': score,
-        'arg_comps': [],
-        'sem_types': [],
-        'text_segments': []} for text, is_successful, score in train_data_tuples]
+        'score': score} for text, is_successful, score in train_data_tuples]
 
     test_data_tuples = successful[num_successful_train:] + unsuccessful[num_unsuccessful_train:]
     random.shuffle(test_data_tuples)
     test_data = [{
         'text': text, 
         'is_successful': is_successful, 
-        'score': score,
-        'arg_comps': [],
-        'sem_types': [],
-        'text_segments': []} for text, is_successful, score in test_data_tuples]
+        'score': score} for text, is_successful, score in test_data_tuples]
 
-    print(f'Train data size: {len(train_data)}, Test data size: {len(test_data)}')
     with open(FINAL_DATA_PATH + '{}_train.json'.format(output_file), 'w') as outfile:
         json.dump(train_data, outfile, indent = 4)
     with open(FINAL_DATA_PATH + '{}_test.json'.format(output_file), 'w') as outfile:
@@ -107,19 +105,13 @@ def create_subsets(file_path, num_per_category, output_file, is_scoa = False):
     train_data = [{
         'text': text, 
         'is_successful': is_successful, 
-        'score': score,
-        'arg_comps': [],
-        'sem_types': [],
-        'text_segments': []} for text, is_successful, score in data_tuples]
+        'score': score} for text, is_successful, score in data_tuples]
 
     data_tuples = successful[num_per_category: num_per_category+num_per_category] + unsuccessful[num_per_category: num_per_category+num_per_category] + neutral[num_per_category: num_per_category+num_per_category]
     random.shuffle(data_tuples)
     test_data = [{'text': text, 
         'is_successful': is_successful, 
-        'score': score,
-        'arg_comps': [],
-        'sem_types': [],
-        'text_segments': []} for text, is_successful, score in data_tuples]
+        'score': score} for text, is_successful, score in data_tuples]
 
     with open(FINAL_DATA_PATH + '{}_train.json'.format(output_file), 'w') as outfile:
         json.dump(train_data, outfile, indent = 4)
@@ -129,8 +121,8 @@ def create_subsets(file_path, num_per_category, output_file, is_scoa = False):
 
 create_subsets('datasets/processed/CMV/final.json', 2500, 'CMV') #Original results in NeurSym paper used subsets of 1500 each.
 create_subsets('datasets/processed/SCOA/final.json', 2500, 'SCOA', is_scoa = True) #Original results in NeurSym paper used subsets of 1500 each.
-create_ap_subset('datasets/processed/AP/final.json', 'AP') #AP dataset does not have "neutral" values.
-create_ukp_subset('datasets/processed/UKP/final.json', 2500, 'UKP') #Original results in NeurSym paper used subsets of 1500 each.
+create_ap_subset('datasets/processed/AP/final.json', 'AP') #AP dataset does not have "neutral" values. It also has fewer examples (~600 successful, so we use only 600 unsuccessful as well for balance).
+# create_ukp_subset('datasets/processed/UKP/final.json', 2500, 'UKP') #Original results in NeurSym paper used subsets of 1500 each.
 
 # create_combined_datasets_for_training(FINAL_DATA_PATH + 'CMV_train_tagged.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json', 0.15, 'CMV_SCOA15.json')
 # create_combined_datasets_for_training(FINAL_DATA_PATH + 'CMV_train_tagged.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json', 0.30, 'CMV_SCOA30.json')
