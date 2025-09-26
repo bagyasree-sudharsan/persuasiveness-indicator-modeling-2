@@ -1,6 +1,9 @@
 import random
 import numpy as np
-from final.constants import CONJUNCTION_LIST, ARG_COMPS, SEM_TYPES
+try:
+    from final.constants import CONJUNCTION_LIST, ARG_COMPS, SEM_TYPES
+except ImportError:
+    from constants import CONJUNCTION_LIST, ARG_COMPS, SEM_TYPES
 from torch.utils.data import Dataset
 import torch
 from transformers import DistilBertTokenizer

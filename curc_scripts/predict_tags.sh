@@ -7,7 +7,7 @@
 #SBATCH --qos=blanca-curc-gpu
 #SBATCH --partition=blanca-curc-gpu
 #SBATCH --gres=gpu:1
-#SBATCH --output=curc_output/arg_comp_classifier.out
+#SBATCH --output=curc_output/predict_tags.out
 #SBATCH --mail-type="ALL"
 #SBATCH --mail-user="basu9216@colorado.edu"
 
@@ -46,4 +46,4 @@ conda activate conda_nsp_env
 cd /scratch/alpine/basu9216/persuasiveness-indicator-modeling-2
 # Run your python file. python -m src.<module>.<script>
 # DO NOT ADD `.py` at the end of your script. 
-python -m final.arg_comp_classifier
+python -m final.predict_tags

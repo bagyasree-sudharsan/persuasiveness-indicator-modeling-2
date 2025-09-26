@@ -4,20 +4,24 @@ from baseline_regressor import baseline_regressor
 from symbolic_regressor import symbolic_regressor
 
 # # --------------------- Classifiers ----------------------------------------
-# baseline_classifier('datasets/CMV_train.json', 0.85, 'baseline_cmv_classifier', 'BaselineCMVClassifier')
-# baseline_classifier('datasets/SCOA_train.json', 0.85, 'baseline_scoa_classifier', 'BaselineSCOAClassifier')
+baseline_classifier('datasets/CMV_train.json', 0.85, 'baseline_cmv_classifier', 'BaselineCMVClassifier')
+baseline_classifier('datasets/SCOA_train.json', 0.85, 'baseline_scoa_classifier', 'BaselineSCOAClassifier')
+baseline_classifier('datasets/AP_train.json', 0.85, 'baseline_ap_classifier', 'BaselineAPClassifier')
 symbolic_classifier('datasets/CMV_train_tagged.json', 'arg_comps_cmv_classifier', 'CMVClassifierArgComps', split_ratio = 0.85, use_sem_types = False) 
 symbolic_classifier('datasets/CMV_train_tagged.json', 'sem_types_cmv_classifier', 'CMVClassifierSemTypes', split_ratio = 0.85, use_sem_types = True) 
 symbolic_classifier('datasets/SCOA_train_tagged.json', 'arg_comps_scoa_classifier', 'SCOAClassifierArgComps', split_ratio = 0.85, use_sem_types = False) 
 symbolic_classifier('datasets/SCOA_train_tagged.json', 'sem_types_scoa_classifier', 'SCOAClassifierSemTypes', split_ratio = 0.85, use_sem_types = True) 
+symbolic_classifier('datasets/AP_train_tagged.json', 'arg_comps_ap_classifier', 'APClassifierArgComps', split_ratio = 0.85, use_sem_types = False) 
+symbolic_classifier('datasets/AP_train_tagged.json', 'sem_types_ap_classifier', 'APClassifierSemTypes', split_ratio = 0.85, use_sem_types = True) 
+
 
 # -------------------- Regression models -----------------------------------
 # baseline_regressor('datasets/CMV_train.json', 0.95, 'baseline_cmv_regressor', 'BaselineCMVRegressor')
 # baseline_regressor('datasets/SCOA_train.json', 0.95, 'baseline_scoa_regressor', 'BaselineSCOARegressor')
-symbolic_regressor('datasets/CMV_train_tagged.json', 'arg_comps_cmv_regressor', 'CMVRegressorArgComps', use_sem_types = False) 
-symbolic_regressor('datasets/CMV_train_tagged.json', 'sem_types_cmv_regressor', 'CMVRegressorSemTypes', use_sem_types = True) 
-symbolic_regressor('datasets/SCOA_train_tagged.json', 'arg_comps_scoa_regressor', 'SCOARegressorArgComps', use_sem_types = False) 
-symbolic_regressor('datasets/SCOA_train_tagged.json', 'sem_types_scoa_regressor', 'SCOARegressorSemTypes', use_sem_types = True) 
+# symbolic_regressor('datasets/CMV_train_tagged.json', 'arg_comps_cmv_regressor', 'CMVRegressorArgComps', use_sem_types = False) 
+# symbolic_regressor('datasets/CMV_train_tagged.json', 'sem_types_cmv_regressor', 'CMVRegressorSemTypes', use_sem_types = True) 
+# symbolic_regressor('datasets/SCOA_train_tagged.json', 'arg_comps_scoa_regressor', 'SCOARegressorArgComps', use_sem_types = False) 
+# symbolic_regressor('datasets/SCOA_train_tagged.json', 'sem_types_scoa_regressor', 'SCOARegressorSemTypes', use_sem_types = True) 
 
 # # -------------------- Combined data -------------------------------------
 # baseline_regressor('datasets/CMV_SCOA15.json', 0.95, 'baseline_cmv_scoa15_regressor', 'BaselineCMVSCOA15Regressor')

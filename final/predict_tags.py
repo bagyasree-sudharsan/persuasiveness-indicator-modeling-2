@@ -1,7 +1,13 @@
 import json
-from common import split_text, get_tokenizer
+try:
+    from final.common import split_text, get_tokenizer
+except ImportError:
+    from common import split_text, get_tokenizer
 from transformers import AutoModelForSequenceClassification, pipeline
-from constants import FINAL_DATA_PATH
+try:
+    from final.constants import FINAL_DATA_PATH
+except ImportError:
+    from constants import FINAL_DATA_PATH
 
 def predict_arg_comps(text_segments):
     model = AutoModelForSequenceClassification.from_pretrained('models/ArgCompClassifier')
@@ -12,7 +18,7 @@ def predict_arg_comps(text_segments):
     predictions = []
     outputs = [model_pipeline(example, **tokenizer_kwargs, top_k = None) for example in text_segments]
     for output in outputs:
-        label_scores = [(label_score['label'], label_score['score']) for label_score in output]
+        label_scores = [(model.config.label2id[label_score['label']], label_score['score']) for label_score in output]
         predictions.append(max(label_scores, key=lambda label_score: label_score[1]))
     
     if len(predictions):
@@ -35,11 +41,11 @@ def predict_sem_types(text_segments, arg_comps):
             predictions.append((0, 1))
         elif arg_comps[i] == 1:
             output = claim_pipeline(text_segments[i], **tokenizer_kwargs, top_k = None)
-            label_scores = [(label_score['label'] + 8, label_score['score']) for label_score in output]
+            label_scores = [(claim_model.config.label2id[label_score['label']] + 8, label_score['score']) for label_score in output]
             predictions.append(max(label_scores, key=lambda label_score: label_score[1]))
         else:
             output = premise_pipeline(text_segments[i], **tokenizer_kwargs, top_k = None)
-            label_scores = [(label_score['label'] + 1, label_score['score']) for label_score in output]
+            label_scores = [(premise_model.config.label2id[label_score['label']] + 1, label_score['score']) for label_score in output]
             predictions.append(max(label_scores, key=lambda label_score: label_score[1]))
     
     if len(predictions):
@@ -60,6 +66,7 @@ def tag_data(file_path, output_file_path, is_ukp = False):
         for d in data:
             text = d['text']
             text_segments = split_text([text])[0]
+            ### text_segments_with_context = 
             arg_comps, scores_ac = predict_arg_comps(text_segments)
             sem_types, scores_st = predict_sem_types(text_segments, arg_comps)
             final_data.append({
@@ -99,10 +106,14 @@ tag_data(FINAL_DATA_PATH + 'CMV_train.json', FINAL_DATA_PATH + 'CMV_train_tagged
 print('----------------------------Tagged CMV_train.----------------------------------------')
 tag_data(FINAL_DATA_PATH + 'CMV_test.json', FINAL_DATA_PATH + 'CMV_test_tagged.json')
 print('----------------------------Tagged CMV_test.-----------------------------------------')
+tag_data(FINAL_DATA_PATH + 'AP_train.json', FINAL_DATA_PATH + 'AP_train_tagged.json')
+print('----------------------------Tagged AP_train.---------------------------------------')
+tag_data(FINAL_DATA_PATH + 'AP_test.json', FINAL_DATA_PATH + 'AP_test_tagged.json')
+print('----------------------------Tagged AP_test.----------------------------------------')
 tag_data(FINAL_DATA_PATH + 'SCOA_train.json', FINAL_DATA_PATH + 'SCOA_train_tagged.json')
 print('----------------------------Tagged SCOA_train.---------------------------------------')
 tag_data(FINAL_DATA_PATH + 'SCOA_test.json', FINAL_DATA_PATH + 'SCOA_test_tagged.json')
 print('----------------------------Tagged SCOA_test.----------------------------------------')
-tag_data(FINAL_DATA_PATH + 'UKP_test.json', FINAL_DATA_PATH + 'UKP_test_tagged.json', is_ukp = True)
-print('----------------------------Tagged UKP_test.-----------------------------------------')
+# tag_data(FINAL_DATA_PATH + 'UKP_test.json', FINAL_DATA_PATH + 'UKP_test_tagged.json', is_ukp = True)
+# print('----------------------------Tagged UKP_test.-----------------------------------------')
         

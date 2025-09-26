@@ -61,7 +61,7 @@ def train_model(text_segment_tuples, train_args_file, pretrained_model, model_na
     print('Saved model {}.'.format(model_name))
 
 
-with open('../datasets/processed/AnnotatedCMV/annotated_arg_comps.json', 'r') as infile:
+with open('datasets/processed/AnnotatedCMV/annotated_arg_comps.json', 'r') as infile:
     data = json.load(infile)
 
 texts = [segment for d in data for segment in d['text_segments']]

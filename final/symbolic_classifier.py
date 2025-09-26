@@ -1,5 +1,8 @@
 import json
-from common import train_test_split, add_tags_to_text, TextDataset, get_tokenizer
+try:
+    from final.common import train_test_split, add_tags_to_text, TextDataset, get_tokenizer
+except ImportError:
+    from common import train_test_split, add_tags_to_text, TextDataset, get_tokenizer
 from transformers import DistilBertForSequenceClassification, Trainer, TrainingArguments
 import evaluate
 import numpy as np

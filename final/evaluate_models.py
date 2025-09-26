@@ -9,7 +9,7 @@ sys.stdout = open('evaluation_results.txt','wt')
 
 metrics = Metrics()
 
-def predict(model_path, texts, is_regressor = True, symbolic = None):
+def predict(model_path, texts, is_regressor = True, symbolic = None, parallelize = True):
     model = AutoModelForSequenceClassification.from_pretrained(model_path)
     tokenizer = get_tokenizer(symbolic)
     tokenizer_kwargs = {"truncation": True, "padding": "max_length"}
@@ -17,7 +17,11 @@ def predict(model_path, texts, is_regressor = True, symbolic = None):
         model.resize_token_embeddings(len(tokenizer))
 
     model_pipeline = pipeline('text-classification', model, tokenizer = tokenizer, device = 0)
-    outputs = [model_pipeline(example, **tokenizer_kwargs,  top_k = None) for example in texts]
+
+    if parallelize:
+        outputs = model_pipeline(texts, **tokenizer_kwargs,  top_k = None)
+    else:
+        outputs = [model_pipeline(example, **tokenizer_kwargs,  top_k = None) for example in texts]
 
     if not is_regressor:
         predictions = []

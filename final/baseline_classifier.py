@@ -1,5 +1,8 @@
 import json
-from common import TextDataset, train_test_split
+try:
+    from final.common import TextDataset, train_test_split
+except ImportError:
+    from common import TextDataset, train_test_split
 from transformers import DistilBertForSequenceClassification, DistilBertTokenizer, TrainingArguments, Trainer
 import evaluate
 import numpy as np

@@ -4,12 +4,15 @@ import random
 import numpy as np
 import torch
 import evaluate
-from common import train_test_split, TextDataset
+try:
+    from final.common import train_test_split, TextDataset
+except ImportError:
+    from common import train_test_split, TextDataset
 from sklearn.metrics import confusion_matrix
 
 #Reading the data
 
-with open('../datasets/processed/AnnotatedCMV/annotated_arg_comps.json', 'r') as infile:
+with open('datasets/processed/AnnotatedCMV/annotated_arg_comps.json', 'r') as infile:
     data = json.load(infile)
 
 texts = [segment for d in data for segment in d['text_segments']]
